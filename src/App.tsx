@@ -4,10 +4,10 @@ import './App.css';
 import {Button, Table} from "reactstrap";
 
 function App() {
-    const [crafter, setCraftperson] = useState("");
+    const [crafter, setCraftsperson] = useState("");
 
     const onAddCraftsperson = (craftsperson: string) => {
-        setCraftperson(craftsperson)
+        setCraftsperson(craftsperson)
     }
   return (
     <div className="App">
