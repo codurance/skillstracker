@@ -1,29 +1,44 @@
-import React, { MouseEventHandler, useState } from 'react';
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
-import { Button, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Table } from "reactstrap";
+import { Button, Form, FormGroup, Input, Label, Modal, ModalBody, ModalHeader, Table } from "reactstrap";
 
 
 const CraftspersonForm = (props: any) => {
+    const [craftspeople, setCraftsperson] = useState<object[]>([]);
+    const {toggle} = props;
+
+    const handleFormSubmission = (event: any) => {
+        event.preventDefault();
+        const { name, seniority, skillset, currentProject } = event.target;
+        craftspeople.push({name: name.value, seniority: seniority.value, skillset: skillset.value, currentProject: currentProject.value })
+        console.log({craftspeople});
+        setCraftsperson([...craftspeople])
+    };
+
     return (
-        <Form>
-            <FormGroup>
-                <Label for="name">Name</Label>
-                <Input id="name" />
-            </FormGroup>
-            <FormGroup>
-                <Label for="seniority">Seniority</Label>
-                <Input id="seniority" />
-            </FormGroup>
-            <FormGroup>
-                <Label for="skillset">Skillset</Label>
-                <Input id="skillset" />
-            </FormGroup>
-            <FormGroup>
-                <Label for="current-project">Current Project</Label>
-                <Input id="current-project" />
-            </FormGroup>
-        </Form>
+        <div>
+            <Form onSubmit={handleFormSubmission}>
+                <FormGroup>
+                    <Label for="name">Name</Label>
+                    <Input id="name" />
+                </FormGroup>
+                <FormGroup>
+                    <Label for="seniority">Seniority</Label>
+                    <Input id="seniority" />
+                </FormGroup>
+                <FormGroup>
+                    <Label for="skillset">Skillset</Label>
+                    <Input id="skillset" />
+                </FormGroup>
+                <FormGroup>
+                    <Label for="currentProject">Current Project</Label>
+                    <Input id="currentProject" />
+                </FormGroup>
+                <Button color="primary" type="submit">Submit</Button>
+            </Form>
+            <Button color="secondary" onClick={toggle}>Cancel</Button>
+        </div>
     )
 }
 
@@ -32,15 +47,11 @@ type CraftspersonModalProps = {
     className: string;
 }
 const CraftspersonModal = (props: CraftspersonModalProps) => {
-    
+
     const {buttonLabel, className} = props;
     const [modal, setModal] = useState(false);
 
     const toggle = () => setModal(!modal);
-
-    const handleFormSubmission = (event: any) => {
-        console.log(event.target)
-    };
 
     return (
         <div>
@@ -48,12 +59,8 @@ const CraftspersonModal = (props: CraftspersonModalProps) => {
             <Modal isOpen={modal} toggle={toggle} className={className}>
                 <ModalHeader toggle={toggle}>Modal title</ModalHeader>
                 <ModalBody>
-                    <CraftspersonForm />
+                    <CraftspersonForm toogle={toggle}/>
                 </ModalBody>
-                <ModalFooter>
-                    <Button color="primary" onClick={handleFormSubmission}>Submit</Button>{' '}
-                    <Button color="secondary" onClick={toggle}>Cancel</Button>
-                </ModalFooter>
             </Modal>
         </div>
     )
@@ -62,22 +69,6 @@ const CraftspersonModal = (props: CraftspersonModalProps) => {
 
 
 function App() {
-    const [crafter, setCraftsperson] = useState<object[]>([]);
-
-    const craftspeople = [
-        {
-            name: "Mark",
-            seniority: "S3",
-            skillset: ["Java", "CI/CD"],
-            currentProject: "Acuris"
-        }
-    ];
-
-    const handleFormSubmission = () => {
-        console.log({crafter});
-        setCraftsperson([...craftspeople])
-    };
-
   return (
     <div className="App">
       <header className="header">
