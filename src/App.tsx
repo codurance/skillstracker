@@ -1,31 +1,31 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
-import { Button, Form, FormGroup, Input, Label, Modal, ModalBody, ModalHeader, Table } from "reactstrap";
+import {
+    Button,
+    Form,
+    FormGroup,
+    Input,
+    Label,
+    Modal,
+    ModalBody,
+    ModalHeader,
+    Table } from "reactstrap";
+
+interface Craftsperson {
+    name: string;
+    seniority: string;
+    skillset: string;
+    currentProject: string;
+}
 
 type CraftspersonFormProps = {
     toggle: () => void;
+    handleFormSubmission: (event: any) => void;
 }
 
 const CraftspersonForm = (props: CraftspersonFormProps) => {
-    const [craftspeople, setCraftsperson] = useState<object[]>([]);
-    const {toggle} = props;
-
-    const handleFormSubmission = (event: any) => {
-        event.preventDefault();
-        const { name, seniority, skillset, currentProject } = event.target;
-        const craftspersonAttributes = {
-            name: name.value,
-            seniority: seniority.value,
-            skillset: skillset.value,
-            currentProject: currentProject.value
-        };
-        craftspeople.push(craftspersonAttributes)
-        console.log({craftspeople});
-        setCraftsperson([...craftspeople])
-        toggle()
-    };
-
+    const {toggle, handleFormSubmission} = props;
     return (
         <div>
             <Form onSubmit={handleFormSubmission}>
@@ -45,7 +45,7 @@ const CraftspersonForm = (props: CraftspersonFormProps) => {
                     <Label for="currentProject">Current Project</Label>
                     <Input id="currentProject" />
                 </FormGroup>
-                <Button color="primary" type="submit">Submit</Button>{' '}
+                <Button color="primary" type="submit" onClick={toggle}>Submit</Button>{' '}
                 <Button color="secondary" type="button" onClick={toggle}>Cancel</Button>
             </Form>
         </div>
@@ -55,10 +55,12 @@ const CraftspersonForm = (props: CraftspersonFormProps) => {
 type CraftspersonModalProps = {
     buttonLabel: string;
     className: string;
+    handleFormSubmission: (event: any) => void;
 }
+
 const CraftspersonModal = (props: CraftspersonModalProps) => {
 
-    const {buttonLabel, className} = props;
+    const {buttonLabel, className, handleFormSubmission} = props;
     const [modal, setModal] = useState(false);
 
     const toggle = () => setModal(!modal);
@@ -69,7 +71,7 @@ const CraftspersonModal = (props: CraftspersonModalProps) => {
             <Modal isOpen={modal} toggle={toggle} className={className}>
                 <ModalHeader toggle={toggle}>Modal title</ModalHeader>
                 <ModalBody>
-                    <CraftspersonForm toggle={toggle}/>
+                    <CraftspersonForm toggle={toggle} handleFormSubmission={handleFormSubmission}/>
                 </ModalBody>
             </Modal>
         </div>
@@ -78,14 +80,36 @@ const CraftspersonModal = (props: CraftspersonModalProps) => {
 
 
 
-function App() {
-  return (
-    <div className="App">
-      <header className="header">
-        <h1>Codurance Skills Tracker</h1>
-      </header>
-      <Table striped>
-          <thead>
+function TableData(props: Craftsperson) {
+    const {name, seniority, skillset, currentProject} = props;
+    return (
+        <tr>
+            <th scope="row">1</th>
+            <td>{name}</td>
+            <td>{seniority}</td>
+            <td>{skillset}</td>
+            <td>{currentProject}</td>
+        </tr>
+    )
+}
+
+type SkillsTrackerTableProps = {
+    craftspeople: Craftsperson[];
+}
+
+function SkillsTrackerTable(props: SkillsTrackerTableProps) {
+    const {craftspeople} = props;
+    console.log(craftspeople);
+    const crafters = craftspeople.map(craftsperson => <TableData
+        name={craftsperson.name}
+        seniority={craftsperson.seniority}
+        skillset={craftsperson.skillset}
+        currentProject={craftsperson.currentProject} />
+    )
+    console.log(crafters);
+
+    return <Table striped>
+        <thead>
             <tr>
                 <th>#</th>
                 <th>Name</th>
@@ -93,46 +117,36 @@ function App() {
                 <th>Skill Set</th>
                 <th>Current Project</th>
             </tr>
-          </thead>
-          <tbody>
-              <tr>
-                  <th scope="row">1</th>
-                  <td>Mark</td>
-                  <td>S3</td>
-                  <td>Java, CI/CD</td>
-                  <td>Acuris</td>
-              </tr>
-              <tr>
-                  <th scope="row">2</th>
-                  <td>Otto</td>
-                  <td>Craftsperson</td>
-                  <td>Javascript, Typescript, AWS Lambda</td>
-                  <td>Cazoo</td>
-              </tr>
-              <tr>
-                  <th scope="row">3</th>
-                  <td>Ade</td>
-                  <td>Principal</td>
-                  <td>Everything</td>
-                  <td>Digital Theatre</td>
-              </tr>
-              <tr>
-                  <th scope="row">4</th>
-                  <td>Matt</td>
-                  <td>S1</td>
-                  <td>Ruby, Rails, JS, NodeJs</td>
-                  <td>Lloyds</td>
-              </tr>
-              <tr>
-                  <th scope="row">5</th>
-                  <td>Takuma</td>
-                  <td>S1</td>
-                  <td>Clojure, Ruby, Rails, JS, NodeJs</td>
-                  <td>Lloyds</td>
-              </tr>
-          </tbody>
-      </Table>
-      <CraftspersonModal buttonLabel="Add Craftsperson" className="craftsperson-modal" />
+        </thead>
+        <tbody>
+            {crafters}
+        </tbody>
+    </Table>;
+}
+
+
+function App() {
+    const [craftspeople, setCraftsperson] = useState<Craftsperson[]>([]);
+    const handleFormSubmission = (event: any) => {
+        event.preventDefault();
+        const { name, seniority, skillset, currentProject } = event.target;
+        const craftspersonAttributes = {
+            name: name.value,
+            seniority: seniority.value,
+            skillset: skillset.value,
+            currentProject: currentProject.value
+        };
+        craftspeople.push(craftspersonAttributes)
+        setCraftsperson([...craftspeople])
+    };
+  return (
+    <div className="App">
+        <header className="header">
+            <h1>Codurance Skills Tracker</h1>
+        </header>
+        <SkillsTrackerTable craftspeople={craftspeople}/>
+        <CraftspersonModal buttonLabel="Add Craftsperson" className="craftsperson-modal"
+                           handleFormSubmission={handleFormSubmission}/>
     </div>
   );
 }
