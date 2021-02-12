@@ -3,17 +3,27 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
 import { Button, Form, FormGroup, Input, Label, Modal, ModalBody, ModalHeader, Table } from "reactstrap";
 
+type CraftspersonFormProps = {
+    toggle: () => void;
+}
 
-const CraftspersonForm = (props: any) => {
+const CraftspersonForm = (props: CraftspersonFormProps) => {
     const [craftspeople, setCraftsperson] = useState<object[]>([]);
     const {toggle} = props;
 
     const handleFormSubmission = (event: any) => {
         event.preventDefault();
         const { name, seniority, skillset, currentProject } = event.target;
-        craftspeople.push({name: name.value, seniority: seniority.value, skillset: skillset.value, currentProject: currentProject.value })
+        const craftspersonAttributes = {
+            name: name.value,
+            seniority: seniority.value,
+            skillset: skillset.value,
+            currentProject: currentProject.value
+        };
+        craftspeople.push(craftspersonAttributes)
         console.log({craftspeople});
         setCraftsperson([...craftspeople])
+        toggle()
     };
 
     return (
@@ -35,9 +45,9 @@ const CraftspersonForm = (props: any) => {
                     <Label for="currentProject">Current Project</Label>
                     <Input id="currentProject" />
                 </FormGroup>
-                <Button color="primary" type="submit">Submit</Button>
+                <Button color="primary" type="submit">Submit</Button>{' '}
+                <Button color="secondary" type="button" onClick={toggle}>Cancel</Button>
             </Form>
-            <Button color="secondary" onClick={toggle}>Cancel</Button>
         </div>
     )
 }
@@ -59,7 +69,7 @@ const CraftspersonModal = (props: CraftspersonModalProps) => {
             <Modal isOpen={modal} toggle={toggle} className={className}>
                 <ModalHeader toggle={toggle}>Modal title</ModalHeader>
                 <ModalBody>
-                    <CraftspersonForm toogle={toggle}/>
+                    <CraftspersonForm toggle={toggle}/>
                 </ModalBody>
             </Modal>
         </div>
